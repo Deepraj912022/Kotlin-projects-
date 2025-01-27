@@ -1,0 +1,35 @@
+data class Task(val title: String, var isCompleted: Boolean = false) // Data class to represent a task
+
+class TaskManager {
+    private val tasks: MutableList<Task> = mutableListOf() 
+
+    fun addTask(title: String) {
+        tasks.add(Task(title))
+    }
+
+    fun markAsCompleted(title: String) {
+        val task = tasks.find { it.title == title }
+        task?.isCompleted = true
+    }
+
+    fun getTasks(): List<Task> {
+        return tasks
+    }
+
+    fun removeTask(title: String) {
+        tasks.removeIf { it.title == title }
+    }
+}
+
+// Example usage
+fun main() {
+    val taskManager = TaskManager()
+    taskManager.addTask("Buy groceries")
+    taskManager.addTask("Write report")
+    taskManager.markAsCompleted("Write report")
+    
+    println("Tasks:")
+    for (task in taskManager.getTasks()) {
+        println("${task.title} - ${if (task.isCompleted) "Completed" else "Pending"}")
+    }
+}
