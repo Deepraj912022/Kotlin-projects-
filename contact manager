@@ -1,0 +1,100 @@
+import java.io.File
+
+data class Contact(
+    val name: String,
+    val phone: String,
+    val email: String
+)
+
+fun main() {
+    val contactsFile = File("contacts.txt")
+    val contacts = loadContacts(contactsFile)
+
+    while (true) {
+        println("\n=== Contact Manager ===")
+        println("1. Add Contact")
+        println("2. List Contacts")
+        println("3. Search Contact")
+        println("4. Delete Contact")
+        println("5. Exit")
+
+        when (readlnOrNull()?.toIntOrNull()) {
+            1 -> addContact(contacts)
+            2 -> listContacts(contacts)
+            3 -> searchContact(contacts)
+            4 -> deleteContact(contacts)
+            5 -> {
+                saveContacts(contacts, contactsFile)
+                println("Goodbye!")
+                return
+            }
+            else -> println("Invalid choice. Try again.")
+        }
+    }
+}
+
+fun loadContacts(file: File): MutableList<Contact> {
+    return if (file.exists()) {
+        file.readLines().map { line ->
+            val parts = line.split(",")
+            Contact(parts[0], parts[1], parts[2])
+        }.toMutableList()
+    } else {
+        mutableListOf()
+    }
+}
+
+fun saveContacts(contacts: List<Contact>, file: File) {
+    val data = contacts.joinToString("\n") { "${it.name},${it.phone},${it.email}" }
+    file.writeText(data)
+}
+
+fun addContact(contacts: MutableList<Contact>) {
+    println("Enter name:")
+    val name = readlnOrNull().orEmpty()
+    println("Enter phone:")
+    val phone = readlnOrNull().orEmpty()
+    println("Enter email:")
+    val email = readlnOrNull().orEmpty()
+
+    if (name.isNotBlank() && phone.isNotBlank()) {
+        contacts.add(Contact(name, phone, email))
+        println("Contact added!")
+    } else {
+        println("Name and phone are required.")
+    }
+}
+
+fun listContacts(contacts: List<Contact>) {
+    if (contacts.isEmpty()) {
+        println("No contacts found.")
+    } else {
+        contacts.forEachIndexed { index, contact ->
+            println("${index + 1}. ${contact.name} | ${contact.phone} | ${contact.email}")
+        }
+    }
+}
+
+fun searchContact(contacts: List<Contact>) {
+    println("Enter name to search:")
+    val query = readlnOrNull().orEmpty()
+    val results = contacts.filter { it.name.contains(query) }
+
+    if (results.isEmpty()) {
+        println("No matches found.")
+    } else {
+        listContacts(results)
+    }
+}
+
+fun deleteContact(contacts: MutableList<Contact>) {
+    println("Enter name to delete:")
+    val name = readlnOrNull().orEmpty()
+    val removed = contacts.removeAll { it.name == name }
+
+    if (removed) {
+        println("Contact deleted.")
+    } else {
+        println("Contact not found.")
+    }
+}
