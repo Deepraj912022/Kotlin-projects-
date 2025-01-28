@@ -1,0 +1,93 @@
+data class Note(val id: Int, val title: String, val content: String)
+
+fun main() {
+    val notes = mutableListOf<Note>()
+    var nextId = 1
+
+    while (true) {
+        println("\n=== Notes App ===")
+        println("1. Create Note")
+        println("2. View Notes")
+        println("3. Delete Note")
+        println("4. Exit")
+        print("Enter your choice: ")
+
+        when (readln().trim()) {
+            "1" -> {
+                print("Enter note title: ")
+                val title = readln().trim()
+                print("Enter note content: ")
+                val content = readln().trim()
+                
+                if (title.isNotEmpty() && content.isNotEmpty()) {
+                    notes.add(Note(nextId, title, content))
+                    println("Note added with ID: $nextId")
+                    nextId++
+                } else {
+                    println("Both title and content must be provided!")
+                }
+            }
+            
+            "2" -> {
+                if (notes.isEmpty()) {
+                    println("No notes available.")
+                } else {
+                    println("\n=== All Notes ===")
+                    notes.forEach { println("ID: ${it.id} | Title: ${it.title}") }
+                    
+                    print("\nEnter note ID to view details (0 to return): ")
+                    val idInput = readln().toIntOrNull()
+                    
+                    when {
+                        idInput == 0 -> continue
+                        idInput != null -> {
+                            val note = notes.find { it.id == idInput }
+                            if (note != null) {
+                                println("\n=== Note Details ===")
+                                println("ID: ${note.id}")
+                                println("Title: ${note.title}")
+                                println("Content: ${note.content}")
+                            } else {
+                                println("Invalid ID. Note not found.")
+                            }
+                        }
+                        else -> println("Invalid input. Please enter a number.")
+                    }
+                }
+            }
+            
+            "3" -> {
+                if (notes.isEmpty()) {
+                    println("No notes to delete.")
+                } else {
+                    println("\n=== All Notes ===")
+                    notes.forEach { println("ID: ${it.id} | Title: ${it.title}") }
+                    
+                    print("\nEnter note ID to delete (0 to cancel): ")
+                    val idInput = readln().toIntOrNull()
+                    
+                    when {
+                        idInput == 0 -> continue
+                        idInput != null -> {
+                            val note = notes.find { it.id == idInput }
+                            if (note != null) {
+                                notes.remove(note)
+                                println("Note deleted successfully.")
+                            } else {
+                                println("Invalid ID. Note not found.")
+                            }
+                        }
+                        else -> println("Invalid input. Please enter a number.")
+                    }
+                }
+            }
+            
+            "4" -> {
+                println("Exiting application...")
+                return
+            }
+            
+            else -> println("Invalid choice. Please enter a number between 1-4.")
+        }
+    }
+}
