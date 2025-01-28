@@ -1,0 +1,89 @@
+data class Recipe(
+    val name: String,
+    val ingredients: List<String>,
+    val instructions: String
+)
+
+fun main() {
+    val recipes = mutableListOf<Recipe>()
+    
+    // Sample initial recipes
+    recipes.add(
+        Recipe(
+            "Pancakes",
+            listOf("flour", "milk", "egg", "sugar", "baking powder"),
+            "Mix all ingredients and cook on a hot griddle."
+        )
+    )
+
+    while (true) {
+        println("\n=== Recipe Finder ===")
+        println("1. Add new recipe")
+        println("2. Search recipes by ingredient")
+        println("3. Exit")
+        print("Choose an option: ")
+
+        when (readlnOrNull()?.toIntOrNull()) {
+            1 -> addRecipe(recipes)
+            2 -> searchRecipes(recipes)
+            3 -> {
+                println("Goodbye!")
+                return
+            }
+            else -> println("Invalid option. Please try again.")
+        }
+    }
+}
+
+fun addRecipe(recipes: MutableList<Recipe>) {
+    println("\nEnter recipe name:")
+    val name = readlnOrNull().orEmpty()
+    
+    println("Enter ingredients (comma-separated):")
+    val ingredients = readlnOrNull()
+        ?.split(",")
+        ?.map { it.trim() }
+        ?.filter { it.isNotBlank() }
+        ?: emptyList()
+
+    println("Enter cooking instructions:")
+    val instructions = readlnOrNull().orEmpty()
+
+    if (name.isNotBlank() && ingredients.isNotEmpty() && instructions.isNotBlank()) {
+        recipes.add(Recipe(name, ingredients, instructions))
+        println("Recipe added successfully!")
+    } else {
+        println("Invalid input. Recipe not added.")
+    }
+}
+
+fun searchRecipes(recipes: List<Recipe>) {
+    println("\nEnter ingredients you have (comma-separated):")
+    val searchIngredients = readlnOrNull()
+        ?.split(",")
+        ?.map { it.trim().lowercase() }
+        ?.filter { it.isNotBlank() }
+        ?: emptyList()
+
+    if (searchIngredients.isEmpty()) {
+        println("No ingredients entered.")
+        return
+    }
+
+    val matchingRecipes = recipes.filter { recipe ->
+        recipe.ingredients.any { ingredient ->
+            searchIngredients.any { it == ingredient.lowercase() }
+        }
+    }
+
+    if (matchingRecipes.isEmpty()) {
+        println("No recipes found with these ingredients.")
+    } else {
+        println("\nFound ${matchingRecipes.size} recipe(s):")
+        matchingRecipes.forEachIndexed { index, recipe ->
+            println("\n${index + 1}. ${recipe.name}")
+            println("Ingredients: ${recipe.ingredients.joinToString(", ")}")
+            println("Instructions: ${recipe.instructions}")
+        }
+    }
+}
